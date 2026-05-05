@@ -25,6 +25,8 @@
 - Build file ingestion step
 - Add validation checks for file type, headers, and required fields
 - Convert CSV data into tabular structures
+- Containarise
+- Automate
 
 #### In Progress
 - Create user stories
