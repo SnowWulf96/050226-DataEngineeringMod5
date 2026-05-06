@@ -1,19 +1,19 @@
-Id,Books,Book checkout,Book Returned,Days allowed to borrow,Customer ID
-1,Catcher in the Rye ,2023-02-20,2023-02-25,14,1
-2,Lord of the rings the two towers,2023-03-24,2023-03-21,14,2
-3,Lord of the rings the return of the kind,2023-03-29,2023-03-25,14,3
-5,Dune ,2023-04-02,2023-03-25,14,5
-6,Little Women,2023-04-02,2023-05-01,14,1
-7,IT,2063-04-10,2023-04-03,14,6
-8,Misery ,2023-04-15,2023-04-03,14,7
-9,Catch 22,2023-04-15,2023-04-16,14,7
-10,Animal Farm ,2023-04-20,2023-04-24,14,2
-11,1984,2023-04-23,2023-04-27,14,8
-12,Little Women,2023-04-02,2023-05-01,14,1
-13,East of Eden,2023-04-30,2023-05-05,14,2
-14,America Is in the Heart,2023-05-01,2023-05-07,14,3
-15,Wuthering Heights,2023-05-01,2023-05-10,14,9
-16,Dark Tales,2023-05-15,2023-06-01,14,2
-17,The Bloody Chamber,2023-05-21,2023-06-04,14,3
-18,Les Miserables,2023-06-03,2023-06-07,14,5
-20,Frankenstein,2023-06-01,2023-06-20,14,2
+Id,Books,Book checkout,Book Returned,Days allowed to borrow,Customer ID,Days Borrowed
+1,Catcher in the Rye ,2023-02-20,2023-02-25,14,1,5
+2,Lord of the rings the two towers,2023-03-07,2023-03-21,14,2,14
+3,Lord of the rings the return of the kind,2023-03-11,2023-03-25,14,3,14
+5,Dune ,2023-03-11,2023-03-25,14,5,14
+6,Little Women,2023-04-02,2023-05-01,14,1,29
+7,IT,2023-03-20,2023-04-03,14,6,14
+8,Misery ,2023-03-20,2023-04-03,14,7,14
+9,Catch 22,2023-04-15,2023-04-16,14,7,1
+10,Animal Farm ,2023-04-20,2023-04-24,14,2,4
+11,1984,2023-04-23,2023-04-27,14,8,4
+12,Little Women,2023-04-02,2023-05-01,14,1,29
+13,East of Eden,2023-04-30,2023-05-05,14,2,5
+14,America Is in the Heart,2023-05-01,2023-05-07,14,3,6
+15,Wuthering Heights,2023-05-01,2023-05-10,14,9,9
+16,Dark Tales,2023-05-15,2023-06-01,14,2,17
+17,The Bloody Chamber,2023-05-21,2023-06-04,14,3,14
+18,Les Miserables,2023-06-03,2023-06-07,14,5,4
+20,Frankenstein,2023-06-01,2023-06-20,14,2,19

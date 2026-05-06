@@ -1,6 +1,6 @@
 metric_group,dataset,column,metric_name,value
 drop_counts,SystemBook,,RowsDropped,96
-drop_counts,SystemBook,,ColsDropped,0
+drop_counts,SystemBook,,ColsDropped,-1
 drop_counts,SystemCustomers,,RowsDropped,1
 drop_counts,SystemCustomers,,ColsDropped,0
 referential_integrity,SystemBook,Customer ID,RowsCustomerNotFound,2
