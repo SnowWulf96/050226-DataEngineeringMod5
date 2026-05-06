@@ -26,7 +26,7 @@ def drop_duplicates_and_na(df: pd.DataFrame, subset: list) -> pd.DataFrame:
     return df
 
 def drop_na_required_columns(df: pd.DataFrame, required_columns: list) -> pd.DataFrame:
-    # Drop rows where any of the required columns are missing. (e.g. Customer ID, Books, Book Checkout)
+    # Drop rows where any of the required columns are missing. (e.g. Customer ID, Books)
     df = df.dropna(subset=required_columns)
     return df
 
@@ -200,7 +200,7 @@ def main() -> None:
 
     # Clean books using the helper functions, passing the cleaned customers for ID validation.
     cleaned_books = convert_blanks(raw_books.copy())
-    cleaned_books = drop_duplicates_and_na(cleaned_books, subset=['Customer ID', 'Books', 'Book checkout'])
+    cleaned_books = drop_duplicates_and_na(cleaned_books, subset=['Customer ID', 'Books'])
     cleaned_books = drop_na_required_columns(cleaned_books, ['Customer ID', 'Books', 'Book checkout'])
     cleaned_books = Check_Customer_Ids(cleaned_books, cleaned_customers)
     cleaned_books = convert_to_int(cleaned_books, 'Customer ID')
