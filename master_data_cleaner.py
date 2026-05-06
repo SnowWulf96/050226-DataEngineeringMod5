@@ -8,6 +8,7 @@ Stretch:
 2. Output the files to local SSMS database with the DE metrics.
 3. Put this into a Python script that can be run on demand '''
 import pandas as pd
+import argparse
 from datetime import datetime
 import urllib.parse
 import pyodbc
@@ -174,7 +175,19 @@ def load_to_sql_server(books_df: pd.DataFrame, customers_df: pd.DataFrame, metri
     print('Tables: fact_books_clean, dim_customers_clean, etl_metrics')
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description='Clean library CSVs and optionally load to SQL Server.')
+    parser.add_argument(
+        '--load-to-sql',
+        action='store_true',
+        help='Load cleaned data and metrics into local SQL Server.',
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
+    args = parse_args()
+
     # Load raw CSV files.
     raw_books = pd.read_csv('03_Library Systembook.csv')
     raw_customers = pd.read_csv('03_Library SystemCustomers.csv')
@@ -213,8 +226,11 @@ def main() -> None:
     metrics = calculate_metrics(raw_books, raw_customers, cleaned_books, cleaned_customers)
     metrics.to_csv('transformation_metrics_all.csv', index=False)
 
-    # Load the cleaned data and metrics into local SQL Server.
-    load_to_sql_server(cleaned_books, cleaned_customers, metrics)
+    # Load the cleaned data and metrics into local SQL Server (optional).
+    if args.load_to_sql:
+        load_to_sql_server(cleaned_books, cleaned_customers, metrics)
+    else:
+        print('Skipped SQL Server load. Use --load-to-sql to enable it.')
 
     # Print summary info.
     print('Cleaning complete')
