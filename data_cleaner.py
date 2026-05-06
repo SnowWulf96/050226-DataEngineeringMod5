@@ -13,64 +13,64 @@ import urllib.parse
 import pyodbc
 from sqlalchemy import create_engine
 
+
+def clean_data_books(df: pd.DataFrame, customer_df: pd.DataFrame) -> pd.DataFrame:
+    # Treat blank/whitespace-only cells as NA so they are handled consistently.
+    df = df.replace(r'^\s*$', pd.NA, regex=True)
+    # Drop duplicate rows from the raw book dataset.
+    df = df.drop_duplicates()
+    # Drop rows where required columns are missing.
+    df = df.dropna(subset=['Customer ID', 'Books', 'Book checkout'])
+    # Keep only rows where the Customer ID exists in the customer table.
+    df = df[df['Customer ID'].isin(customer_df['Customer ID'])]
+
+    # Convert Customer ID to integer.
+    df['Customer ID'] = df['Customer ID'].astype(int)
+    # Parse Book checkout dates, strip any surrounding quotes, and coerce invalid data to NaT.
+    df['Book checkout'] = pd.to_datetime(
+        df['Book checkout'].astype(str).str.replace('"', ''),
+        errors='coerce',
+        dayfirst=True,
+    )
+    # Convert Id to integer.
+    df['Id'] = df['Id'].astype(int)
+    # Convert Books to string.
+    df['Books'] = df['Books'].astype(str)
+    # Parse Book Returned dates, strip quotes, and coerce invalid data.
+    df['Book Returned'] = pd.to_datetime(
+        df['Book Returned'].astype(str).str.replace('"', ''),
+        errors='coerce',
+        dayfirst=True,
+    )
+    # Convert Days allowed to borrow to integer, including the special value "2 weeks".
+    df['Days allowed to borrow'] = df['Days allowed to borrow'].apply(
+        lambda x: 14 if x == '2 weeks' else int(x)
+    )
+    # If Book checkout is missing, infer it from Book Returned minus allowed loan days.
+    df['Book checkout'] = df['Book checkout'].fillna(
+        df['Book Returned'] - pd.to_timedelta(df['Days allowed to borrow'], unit='D')
+    )
+
+    return df
+
+
+def clean_data_customers(df: pd.DataFrame) -> pd.DataFrame:
+    # Treat blank/whitespace-only cells as NA.
+    df = df.replace(r'^\s*$', pd.NA, regex=True)
+    # Drop duplicate rows from the customer dataset.
+    df = df.drop_duplicates()
+    # Drop rows with any missing values.
+    df = df.dropna()
+    # Convert Customer ID to integer.
+    df['Customer ID'] = df['Customer ID'].astype(int)
+    # Convert Customer Name to string.
+    df['Customer Name'] = df['Customer Name'].astype(str)
+    return df
+
+
 def convert_blanks(df: pd.DataFrame) -> pd.DataFrame:
     # Replace blank strings with pandas NA for accurate metric calculations.
     return df.replace(r'^\s*$', pd.NA, regex=True)
-
-def drop_duplicates_and_na(df: pd.DataFrame, subset: list) -> pd.DataFrame:
-    # Drop duplicate rows.
-    df = df.drop_duplicates()
-    # Drop rows where all values in the subset are missing.
-    df = df.dropna(subset=subset, how='all')
-    return df
-
-def drop_na_required_columns(df: pd.DataFrame, required_columns: list) -> pd.DataFrame:
-    # Drop rows where any of the required columns are missing. (e.g. Customer ID, Books, Book Checkout)
-    df = df.dropna(subset=required_columns)
-    return df
-
-def Check_Customer_Ids(df: pd.DataFrame, customer_df: pd.DataFrame) -> pd.DataFrame:
-    # Keep only rows where the Customer ID exists in the customer table.
-    df = df[df['Customer ID'].isin(customer_df['Customer ID'])]
-    return df
-
-def convert_to_int(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
-    # Convert the specified column to integer.
-    df[column_name] = df[column_name].astype(int)
-    return df
-
-def strip_quotes(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
-    # Strip quotes from the specified column.
-    df[column_name] = df[column_name].astype(str).str.replace('"', '', regex=False)
-    return df
-
-def Convert_to_datetime(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
-    # Pass the specified column as datetime and coercing errors to NaT.
-    df[column_name] = pd.to_datetime(df[column_name], errors='coerce', dayfirst=True)
-    return df
-
-def convert_to_strings(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
-    # Convert the specified column to string.
-    df[column_name] = df[column_name].astype(str)
-    return df
-
-def convert_xweeks_to_no_days(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
-    # Convert "x weeks" to number of days in the specified column.
-    df[column_name] = df[column_name].apply(lambda x: int(x.split()[0]) * 7 ##first value is number times this by 7
-                                                           if isinstance(x, str) and 'week' in x else x) ##as long as it is a string and contains week, otherwise return original value
-    return df
-
-def if__date_invalid_infer_checkout(df: pd.DataFrame) -> pd.DataFrame:
-    # If Book checkout is missing, infer it from Book Returned minus allowed loan days.
-    df['Book checkout'] = df['Book checkout'].fillna(
-        df['Book Returned'] - pd.to_timedelta(df['Days allowed to borrow'], unit='D'))
-    return df
-
-##Enrich data by adding column to calculate Days borrowed and add this in []
-def calculate_days_borrowed(df: pd.DataFrame) -> pd.DataFrame:
-    #calculate the number of days a book was borrowed by subtracting the checkout date from the returned date
-    df['Days Borrowed'] = (df['Book Returned'] - df['Book checkout']).dt.days
-    return df
 
 
 def calculate_metrics(raw_books: pd.DataFrame, raw_customers: pd.DataFrame, cleaned_books: pd.DataFrame, cleaned_customers: pd.DataFrame) -> pd.DataFrame:
@@ -173,30 +173,9 @@ def main() -> None:
     raw_books = pd.read_csv('03_Library Systembook.csv')
     raw_customers = pd.read_csv('03_Library SystemCustomers.csv')
 
-    # Clean customers first — needed as a reference for book customer ID checks.
-    cleaned_customers = convert_blanks(raw_customers.copy())
-    cleaned_customers = drop_duplicates_and_na(cleaned_customers, subset=['Customer ID', 'Customer Name'])
-    cleaned_customers = convert_to_int(cleaned_customers, 'Customer ID')
-    cleaned_customers = convert_to_strings(cleaned_customers, 'Customer Name')
-
-    # Clean books using the helper functions, passing the cleaned customers for ID validation.
-    cleaned_books = convert_blanks(raw_books.copy())
-    cleaned_books = drop_duplicates_and_na(cleaned_books, subset=['Customer ID', 'Books', 'Book checkout'])
-    cleaned_books = drop_na_required_columns(cleaned_books, ['Customer ID', 'Books', 'Book checkout'])
-    cleaned_books = Check_Customer_Ids(cleaned_books, cleaned_customers)
-    cleaned_books = convert_to_int(cleaned_books, 'Customer ID')
-    cleaned_books = convert_to_int(cleaned_books, 'Id')
-    cleaned_books = convert_to_strings(cleaned_books, 'Books')
-    cleaned_books = strip_quotes(cleaned_books, 'Book checkout')
-    cleaned_books = Convert_to_datetime(cleaned_books, 'Book checkout')
-    cleaned_books = strip_quotes(cleaned_books, 'Book Returned')
-    cleaned_books = Convert_to_datetime(cleaned_books, 'Book Returned')
-    cleaned_books = convert_xweeks_to_no_days(cleaned_books, 'Days allowed to borrow')
-    cleaned_books = if__date_invalid_infer_checkout(cleaned_books)
-
-    # Enrich with calculated days borrowed.
-    cleaned_books = calculate_days_borrowed(cleaned_books)
-
+    # Clean the data using functions.
+    cleaned_customers = clean_data_customers(raw_customers.copy())
+    cleaned_books = clean_data_books(raw_books.copy(), cleaned_customers)
 
     # Write the cleaned CSV outputs.
     cleaned_books.to_csv('03_Library Systembook Cleaned.csv', index=False)
