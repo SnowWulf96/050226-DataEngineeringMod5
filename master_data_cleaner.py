@@ -59,6 +59,11 @@ def convert_xweeks_to_no_days(df: pd.DataFrame, column_name: str) -> pd.DataFram
     df[column_name] = df[column_name].apply(lambda x: int(x.split()[0]) * 7 ##first value is number times this by 7
                                                            if isinstance(x, str) and 'week' in x else x) ##as long as it is a string and contains week, otherwise return original value
     return df
+##check dates checkout not after returned, if so set to NA
+def check_checkout_not_after_returned(df: pd.DataFrame) -> pd.DataFrame:
+    # If Book checkout is after Book Returned, set Book checkout to NA.
+    df.loc[df['Book checkout'] > df['Book Returned'], 'Book checkout'] = pd.NA
+    return df
 
 def if__date_invalid_infer_checkout(df: pd.DataFrame) -> pd.DataFrame:
     # If Book checkout is missing, infer it from Book Returned minus allowed loan days.
@@ -71,6 +76,7 @@ def calculate_days_borrowed(df: pd.DataFrame) -> pd.DataFrame:
     #calculate the number of days a book was borrowed by subtracting the checkout date from the returned date
     df['Days Borrowed'] = (df['Book Returned'] - df['Book checkout']).dt.days
     return df
+
 
 
 def calculate_metrics(raw_books: pd.DataFrame, raw_customers: pd.DataFrame, cleaned_books: pd.DataFrame, cleaned_customers: pd.DataFrame) -> pd.DataFrame:
@@ -192,6 +198,7 @@ def main() -> None:
     cleaned_books = strip_quotes(cleaned_books, 'Book Returned')
     cleaned_books = Convert_to_datetime(cleaned_books, 'Book Returned')
     cleaned_books = convert_xweeks_to_no_days(cleaned_books, 'Days allowed to borrow')
+    cleaned_books = check_checkout_not_after_returned(cleaned_books)
     cleaned_books = if__date_invalid_infer_checkout(cleaned_books)
 
     # Enrich with calculated days borrowed.
