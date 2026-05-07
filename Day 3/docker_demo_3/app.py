@@ -33,7 +33,7 @@ try:
     conn.commit()
     print(f"Inserted: {log_message}")
 
-    # Show all rows
+    # select all rows and print them
     cursor.execute("SELECT * FROM logs ORDER BY created_at DESC")
     rows = cursor.fetchall()
     print("Recent logs:")
