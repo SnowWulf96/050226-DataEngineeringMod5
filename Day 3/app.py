@@ -1,0 +1,1 @@
+print("Hello, World, I just created docker image and container for this app")
