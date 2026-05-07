@@ -1,0 +1,8 @@
+FROM python:3.12-slim
+WORKDIR /app
+COPY Calculator.py .
+ENTRYPOINT ["python", "Calculator.py"]
+
+
+###docker build -t calculator-app .
+###docker run calculator-app --a 125 --b 625 
