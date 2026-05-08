@@ -1,0 +1,12 @@
+metric_group,dataset,column,metric_name,value,run_id,run_start
+drop_counts,SystemBook,,RowsDropped,96,a536d5aa-8d7a-46cf-851c-e762665251a5,2026-05-08 12:07:18.432829
+drop_counts,SystemBook,,ColsDropped,-1,a536d5aa-8d7a-46cf-851c-e762665251a5,2026-05-08 12:07:18.432829
+drop_counts,SystemCustomers,,RowsDropped,1,a536d5aa-8d7a-46cf-851c-e762665251a5,2026-05-08 12:07:18.432829
+drop_counts,SystemCustomers,,ColsDropped,0,a536d5aa-8d7a-46cf-851c-e762665251a5,2026-05-08 12:07:18.432829
+referential_integrity,SystemBook,Customer ID,RowsCustomerNotFound,2,a536d5aa-8d7a-46cf-851c-e762665251a5,2026-05-08 12:07:18.432829
+duplicates,SystemBook,,DuplicateRowsRemoved,92,a536d5aa-8d7a-46cf-851c-e762665251a5,2026-05-08 12:07:18.432829
+duplicates,SystemCustomers,,DuplicateRowsRemoved,0,a536d5aa-8d7a-46cf-851c-e762665251a5,2026-05-08 12:07:18.432829
+invalid_dates,SystemBook,Book checkout,InvalidDateCount,1,a536d5aa-8d7a-46cf-851c-e762665251a5,2026-05-08 12:07:18.432829
+invalid_dates,SystemBook,Book Returned,InvalidDateCount,0,a536d5aa-8d7a-46cf-851c-e762665251a5,2026-05-08 12:07:18.432829
+invalid_dates,SystemBook,,InvalidDateTotal,1,a536d5aa-8d7a-46cf-851c-e762665251a5,2026-05-08 12:07:18.432829
+outliers,SystemBook,loan_duration_days,IQR_OutlierCount,1,a536d5aa-8d7a-46cf-851c-e762665251a5,2026-05-08 12:07:18.432829
