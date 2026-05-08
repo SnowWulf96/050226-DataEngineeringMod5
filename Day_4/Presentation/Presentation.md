@@ -13,7 +13,7 @@ Right now, every time someone needs clean library data, it's a manual job to cle
 ### What we're using
 
 - Two CSV files: books and customers data
-- Python app does the work inside adocker container
+- Python app does the work inside a docker container
 - Exports CSVs & throws it all into SQL Server
 - Power BI is then used to show the metrics
 
@@ -74,7 +74,6 @@ A dashboard that shows: is the pipeline healthy? how's the data quality? what ch
 - How many runs failed vs succeeded?
 - How many duplicate rows did we throw out?
 - How many bad dates did we fix?
-- Any other data quality issues?
 
 ---
 
